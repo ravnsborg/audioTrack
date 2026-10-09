@@ -40,6 +40,16 @@ it('shows client records in Filament and stores addresses as text', function () 
         ->and(Schema::getColumnType('clients', 'address'))->toBe('text');
 });
 
+it('truncates client addresses to 25 characters and shows the full address on hover', function () {
+    $address = '12345 Sound Street, Suite 678, Portland, Oregon 97201';
+    $client = Client::factory()->create(['address' => $address]);
+
+    Livewire::test(ListClients::class)
+        ->assertCanSeeTableRecords([$client])
+        ->assertSee('12345 Sound Street,...')
+        ->assertSee($address);
+});
+
 it('creates a client from the Filament form', function () {
     $this->actingAs(User::factory()->create());
 

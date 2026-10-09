@@ -27,7 +27,8 @@ class ClientsTable
                 TextColumn::make('email')
                     ->searchable(),
                 TextColumn::make('address')
-                    ->limit(80),
+                    ->limit(20)
+                    ->tooltip(fn (?string $state): ?string => $state),
             ])
             ->recordActions([
                 EditAction::make(),
