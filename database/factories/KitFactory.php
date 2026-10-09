@@ -3,7 +3,6 @@
 namespace Database\Factories;
 
 use App\Models\Kit;
-use App\Models\KitStatus;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -20,7 +19,7 @@ class KitFactory extends Factory
     {
         return [
             'kit_number' => fake()->unique()->bothify('KIT-####'),
-            'kit_status_id' => KitStatus::factory(),
+            'status' => fake()->randomElement(array_keys(Kit::STATUSES)),
         ];
     }
 }

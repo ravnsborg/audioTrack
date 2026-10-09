@@ -46,10 +46,9 @@ class KitResource extends Resource
                     ->required()
                     ->unique(ignoreRecord: true)
                     ->maxLength(255),
-                Select::make('kit_status_id')
-                    ->relationship('kitStatus', 'name')
-                    ->searchable()
-                    ->preload()
+                Select::make('status')
+                    ->options(Kit::STATUSES)
+                    ->default('available')
                     ->required(),
             ]);
     }
@@ -61,8 +60,9 @@ class KitResource extends Resource
                 TextColumn::make('kit_number')
                     ->searchable()
                     ->sortable(),
-                TextColumn::make('kitStatus.name')
+                TextColumn::make('status')
                     ->label('Status')
+                    ->formatStateUsing(fn (string $state): string => Kit::STATUSES[$state])
                     ->sortable(),
                 TextColumn::make('items_count')
                     ->counts('items')
@@ -79,11 +79,10 @@ class KitResource extends Resource
                     )),
             ])
             ->filters([
-                SelectFilter::make('kit_status_id')
+                SelectFilter::make('status')
                     ->label('Status')
-                    ->relationship('kitStatus', 'name')
-                    ->placeholder('All Statuses')
-                    ->preload(),
+                    ->options(Kit::STATUSES)
+                    ->placeholder('All Statuses'),
             ], FiltersLayout::Hidden)
             ->deferFilters(false)
             ->recordActions([

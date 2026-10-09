@@ -9,7 +9,7 @@ use App\Filament\Resources\Kits\Pages\ManageKits;
 use App\Filament\Widgets\KitsOverview;
 use App\Models\Category;
 use App\Models\Client;
-use App\Models\KitStatus;
+use App\Models\Kit;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -69,7 +69,7 @@ class AdminPanelProvider extends PanelProvider
 
                     if ($currentPage instanceof ManageKits) {
                         return view('filament.kits.status-filter', [
-                            'statuses' => KitStatus::query()->orderBy('name')->pluck('name', 'id'),
+                            'statuses' => Kit::STATUSES,
                         ]);
                     }
 

@@ -14,7 +14,13 @@ return new class extends Migration
         Schema::create('kits', function (Blueprint $table) {
             $table->id();
             $table->string('kit_number')->unique();
-            $table->foreignId('kit_status_id')->constrained('kit_statuses');
+            $table->enum('status', [
+                'available',
+                'staged',
+                'in_transit',
+                'delivered',
+                'pending_cleaning',
+            ])->default('available');
             $table->timestamps();
         });
     }

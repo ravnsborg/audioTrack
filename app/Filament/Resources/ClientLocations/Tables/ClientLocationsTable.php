@@ -26,7 +26,7 @@ class ClientLocationsTable
                     ->sortable(),
                 TextColumn::make('address')
                     ->limit(40)
-                    ->tooltip(fn(?string $state): ?string => $state),
+                    ->tooltip(fn (?string $state): ?string => $state),
             ])
             ->filters([
                 SelectFilter::make('client_id')
