@@ -95,6 +95,7 @@ it('seeds sample items and kits through the default database seeder', function (
 
     $this->assertDatabaseCount('kits', 5);
     $this->assertDatabaseCount('items', 10);
+    $this->assertDatabaseCount('clients', 5);
     expect(Category::query()->orderBy('name')->pluck('name')->all())->toBe([
         'microphone',
         'wireless receiver',
