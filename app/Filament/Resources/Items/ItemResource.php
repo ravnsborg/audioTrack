@@ -16,6 +16,8 @@ use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Enums\FiltersLayout;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 
 class ItemResource extends Resource
@@ -76,6 +78,14 @@ class ItemResource extends Resource
                     ->label('Kit')
                     ->sortable(),
             ])
+            ->filters([
+                SelectFilter::make('category_id')
+                    ->label('Category')
+                    ->relationship('category', 'name')
+                    ->placeholder('All Categories')
+                    ->preload(),
+            ], FiltersLayout::Hidden)
+            ->deferFilters(false)
             ->recordActions([
                 EditAction::make(),
                 DeleteAction::make(),

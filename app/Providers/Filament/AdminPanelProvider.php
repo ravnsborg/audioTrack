@@ -2,6 +2,10 @@
 
 namespace App\Providers\Filament;
 
+use App\Filament\Resources\Items\Pages\ManageItems;
+use App\Filament\Resources\Kits\Pages\ManageKits;
+use App\Models\Category;
+use App\Models\KitStatus;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -10,8 +14,10 @@ use Filament\Pages\Dashboard;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
+use Filament\Tables\View\TablesRenderHook;
 use Filament\Widgets\AccountWidget;
 use Filament\Widgets\FilamentInfoWidget;
+use Illuminate\Contracts\View\View;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Foundation\Http\Middleware\PreventRequestForgery;
@@ -41,6 +47,26 @@ class AdminPanelProvider extends PanelProvider
                 AccountWidget::class,
                 FilamentInfoWidget::class,
             ])
+            ->renderHook(
+                TablesRenderHook::TOOLBAR_GROUPING_SELECTOR_BEFORE,
+                function (): View|string {
+                    $currentPage = app('livewire')->current();
+
+                    if ($currentPage instanceof ManageItems) {
+                        return view('filament.items.category-filter', [
+                            'categories' => Category::query()->orderBy('name')->pluck('name', 'id'),
+                        ]);
+                    }
+
+                    if ($currentPage instanceof ManageKits) {
+                        return view('filament.kits.status-filter', [
+                            'statuses' => KitStatus::query()->orderBy('name')->pluck('name', 'id'),
+                        ]);
+                    }
+
+                    return '';
+                },
+            )
             ->middleware([
                 EncryptCookies::class,
                 AddQueuedCookiesToResponse::class,

@@ -1,5 +1,7 @@
 <?php
 
+use App\Filament\Resources\Items\Pages\ManageItems;
+use App\Filament\Resources\Kits\Pages\ManageKits;
 use App\Models\Category;
 use App\Models\Item;
 use App\Models\Kit;
@@ -10,6 +12,7 @@ use Database\Seeders\DatabaseSeeder;
 use Database\Seeders\KitStatusSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Schema;
+use Livewire\Livewire;
 
 uses(RefreshDatabase::class);
 
@@ -145,4 +148,75 @@ it('shows inventory navigation after the dashboard for authenticated users', fun
     $this->get('/admin/items')->assertSeeInOrder(['Dashboard', 'Items']);
     $this->get('/admin/categories')->assertSee('Item Category');
     $this->get('/admin/item-statuses')->assertNotFound();
+});
+
+it('filters items by category and shows all categories by default', function () {
+    $microphoneCategory = Category::factory()->create(['name' => 'microphone']);
+    $receiverCategory = Category::factory()->create(['name' => 'wireless receiver']);
+    $microphone = Item::factory()->for($microphoneCategory)->create();
+    $receiver = Item::factory()->for($receiverCategory)->create();
+
+    $this->actingAs(User::factory()->create());
+
+    $this->get('/admin/items')
+        ->assertOk()
+        ->assertSee('wire:model.live="tableFilters.category_id.value"', false)
+        ->assertSee('All Categories')
+        ->assertSee('w-full sm:w-64', false)
+        ->assertSeeInOrder(['tableFilters.category_id.value', 'fi-ta-search-field'], false)
+        ->assertDontSee('fi-ta-filters-above-content-ctn', false);
+
+    Livewire::test(ManageItems::class)
+        ->assertCanSeeTableRecords([$microphone, $receiver])
+        ->filterTable('category_id', $microphoneCategory)
+        ->assertCanSeeTableRecords([$microphone])
+        ->assertCanNotSeeTableRecords([$receiver]);
+});
+
+it('filters kits by status and shows all statuses by default', function () {
+    $availableStatus = KitStatus::factory()->create(['name' => 'available']);
+    $stagedStatus = KitStatus::factory()->create(['name' => 'staged']);
+    $availableKit = Kit::factory()->for($availableStatus, 'kitStatus')->create();
+    $stagedKit = Kit::factory()->for($stagedStatus, 'kitStatus')->create();
+
+    $this->actingAs(User::factory()->create());
+
+    $this->get('/admin/kits')
+        ->assertOk()
+        ->assertSee('wire:model.live="tableFilters.kit_status_id.value"', false)
+        ->assertSee('All Statuses')
+        ->assertSee('w-full sm:w-64', false)
+        ->assertSeeInOrder(['tableFilters.kit_status_id.value', 'fi-ta-search-field'], false)
+        ->assertDontSee('fi-ta-filters-above-content-ctn', false);
+
+    Livewire::test(ManageKits::class)
+        ->assertCanSeeTableRecords([$availableKit, $stagedKit])
+        ->filterTable('kit_status_id', $availableStatus)
+        ->assertCanSeeTableRecords([$availableKit])
+        ->assertCanNotSeeTableRecords([$stagedKit]);
+});
+
+it('shows a kit item list in the items column hover tooltip', function () {
+    $category = Category::factory()->create();
+    $kit = Kit::factory()->create();
+    Item::factory()->for($category)->for($kit)->create([
+        'name' => 'Wireless microphone receiver',
+        'sku' => 'SKU-HOVER-001',
+    ]);
+    Item::factory()->for($category)->for($kit)->create([
+        'name' => 'Handheld microphone',
+        'sku' => 'SKU-HOVER-002',
+    ]);
+
+    $this->actingAs(User::factory()->create())
+        ->get('/admin/kits')
+        ->assertOk()
+        ->assertSee('Wireless microphone receiver')
+        ->assertSee('SKU-HOVER-001')
+        ->assertSee('Handheld microphone')
+        ->assertSee('SKU-HOVER-002')
+        ->assertSee('\u003Ch3 style=\u0022font-weight: 600; margin: 0;\u0022\u003EAssigned Items\u003C\/h3', false)
+        ->assertSee('\u003Chr style=\u0022border: 0; border-top: 1px solid currentColor; margin: 0.5rem 0;\u0022\u003E', false)
+        ->assertSee('\u003Cli\u003E\u0026bull; Wireless microphone receiver', false)
+        ->assertSee('\u003Cli\u003E\u0026bull; Handheld microphone', false);
 });
