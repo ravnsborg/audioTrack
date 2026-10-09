@@ -2,13 +2,11 @@
 
 use App\Models\Category;
 use App\Models\Item;
-use App\Models\ItemStatus;
 use App\Models\Kit;
 use App\Models\KitStatus;
 use App\Models\User;
 use Database\Seeders\CategorySeeder;
 use Database\Seeders\DatabaseSeeder;
-use Database\Seeders\ItemStatusSeeder;
 use Database\Seeders\KitStatusSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Schema;
@@ -23,12 +21,12 @@ it('creates the requested inventory tables and columns', function () {
         'serial_number',
         'name',
         'category_id',
-        'items_status_id',
         'notes',
         'created_at',
         'updated_at',
     ]))->toBeTrue()
-        ->and(Schema::hasColumns('item_statuses', ['id', 'name', 'description', 'created_at', 'updated_at']))->toBeTrue()
+        ->and(Schema::hasColumn('items', 'items_status_id'))->toBeFalse()
+        ->and(Schema::hasTable('item_statuses'))->toBeFalse()
         ->and(Schema::hasColumns('categories', ['id', 'name', 'description', 'created_at', 'updated_at']))->toBeTrue()
         ->and(Schema::hasColumns('kits', ['id', 'kit_number', 'kit_status_id', 'created_at', 'updated_at']))->toBeTrue()
         ->and(Schema::hasColumns('kit_statuses', ['id', 'name', 'description', 'created_at', 'updated_at']))->toBeTrue();
@@ -36,18 +34,15 @@ it('creates the requested inventory tables and columns', function () {
 
 it('connects items and kits to their categories and statuses', function () {
     $category = Category::factory()->create();
-    $itemStatus = ItemStatus::factory()->create();
     $kit = Kit::factory()->create();
     $kitStatus = $kit->kitStatus;
 
     $item = Item::factory()
         ->for($category)
-        ->for($itemStatus, 'itemStatus')
         ->for($kit)
         ->create();
 
     expect($item->category->is($category))->toBeTrue()
-        ->and($item->itemStatus->is($itemStatus))->toBeTrue()
         ->and($item->kit->is($kit))->toBeTrue()
         ->and($kit->kitStatus->is($kitStatus))->toBeTrue()
         ->and($category->items()->whereKey($item)->exists())->toBeTrue();
@@ -56,12 +51,10 @@ it('connects items and kits to their categories and statuses', function () {
 it('seeds reusable categories and statuses without duplicate records', function () {
     $this->seed([
         CategorySeeder::class,
-        ItemStatusSeeder::class,
         KitStatusSeeder::class,
     ]);
     $this->seed([
         CategorySeeder::class,
-        ItemStatusSeeder::class,
         KitStatusSeeder::class,
     ]);
 
@@ -69,7 +62,6 @@ it('seeds reusable categories and statuses without duplicate records', function 
         'microphone',
         'wireless receiver',
     ])
-        ->and(ItemStatus::query()->orderBy('name')->pluck('name')->all())->toBe(['Available', 'In Use', 'Maintenance', 'Retired'])
         ->and(KitStatus::query()->orderBy('name')->pluck('name')->all())->toBe([
             'active',
             'available',
@@ -145,9 +137,10 @@ it('assigns kits to existing items without one when the database is reseeded', f
 it('shows inventory navigation after the dashboard for authenticated users', function () {
     $this->actingAs(User::factory()->create());
 
-    foreach (['/admin/items', '/admin/kits', '/admin/categories', '/admin/item-statuses', '/admin/kit-statuses'] as $path) {
+    foreach (['/admin/items', '/admin/kits', '/admin/categories', '/admin/kit-statuses'] as $path) {
         $this->get($path)->assertOk();
     }
 
     $this->get('/admin/items')->assertSeeInOrder(['Dashboard', 'Inventory']);
+    $this->get('/admin/item-statuses')->assertNotFound();
 });

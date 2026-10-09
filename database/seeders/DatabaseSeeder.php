@@ -17,7 +17,6 @@ class DatabaseSeeder extends Seeder
     {
         $this->call([
             CategorySeeder::class,
-            ItemStatusSeeder::class,
             KitStatusSeeder::class,
             KitSeeder::class,
             ItemSeeder::class,

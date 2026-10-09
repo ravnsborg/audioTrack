@@ -18,7 +18,6 @@ return new class extends Migration
             $table->string('serial_number')->nullable()->unique();
             $table->string('name');
             $table->foreignId('category_id')->constrained();
-            $table->foreignId('items_status_id')->constrained('item_statuses');
             $table->text('notes')->nullable();
             $table->timestamps();
         });

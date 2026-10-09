@@ -52,11 +52,6 @@ class ItemResource extends Resource
                     ->searchable()
                     ->preload()
                     ->required(),
-                Select::make('items_status_id')
-                    ->relationship('itemStatus', 'name')
-                    ->searchable()
-                    ->preload()
-                    ->required(),
                 Textarea::make('notes')
                     ->columnSpanFull(),
             ]);
@@ -76,9 +71,6 @@ class ItemResource extends Resource
                     ->searchable(),
                 TextColumn::make('category.name')
                     ->label('Category')
-                    ->sortable(),
-                TextColumn::make('itemStatus.name')
-                    ->label('Status')
                     ->sortable(),
                 TextColumn::make('kit.kit_number')
                     ->label('Kit')
