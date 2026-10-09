@@ -2,9 +2,11 @@
 
 namespace App\Providers\Filament;
 
+use App\Filament\Resources\ClientLocations\Pages\ListClientLocations;
 use App\Filament\Resources\Items\Pages\ManageItems;
 use App\Filament\Resources\Kits\Pages\ManageKits;
 use App\Models\Category;
+use App\Models\Client;
 use App\Models\KitStatus;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
@@ -62,6 +64,12 @@ class AdminPanelProvider extends PanelProvider
                     if ($currentPage instanceof ManageKits) {
                         return view('filament.kits.status-filter', [
                             'statuses' => KitStatus::query()->orderBy('name')->pluck('name', 'id'),
+                        ]);
+                    }
+
+                    if ($currentPage instanceof ListClientLocations) {
+                        return view('filament.client-locations.client-filter', [
+                            'clients' => Client::query()->orderBy('name')->pluck('name', 'id'),
                         ]);
                     }
 

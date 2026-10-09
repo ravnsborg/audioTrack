@@ -21,6 +21,7 @@ class DatabaseSeeder extends Seeder
             KitSeeder::class,
             ItemSeeder::class,
             ClientSeeder::class,
+            ClientLocationSeeder::class,
         ]);
 
         // User::factory()->create([
