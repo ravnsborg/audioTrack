@@ -27,7 +27,8 @@ it('creates the requested inventory tables and columns', function () {
     ]))->toBeTrue()
         ->and(Schema::hasColumn('items', 'items_status_id'))->toBeFalse()
         ->and(Schema::hasTable('item_statuses'))->toBeFalse()
-        ->and(Schema::hasColumns('categories', ['id', 'name', 'description', 'created_at', 'updated_at']))->toBeTrue()
+        ->and(Schema::hasColumns('item_categories', ['id', 'name', 'description', 'created_at', 'updated_at']))->toBeTrue()
+        ->and(Schema::hasTable('categories'))->toBeFalse()
         ->and(Schema::hasColumns('kits', ['id', 'kit_number', 'kit_status_id', 'created_at', 'updated_at']))->toBeTrue()
         ->and(Schema::hasColumns('kit_statuses', ['id', 'name', 'description', 'created_at', 'updated_at']))->toBeTrue();
 });
@@ -141,6 +142,7 @@ it('shows inventory navigation after the dashboard for authenticated users', fun
         $this->get($path)->assertOk();
     }
 
-    $this->get('/admin/items')->assertSeeInOrder(['Dashboard', 'Inventory']);
+    $this->get('/admin/items')->assertSeeInOrder(['Dashboard', 'Items']);
+    $this->get('/admin/categories')->assertSee('Item Category');
     $this->get('/admin/item-statuses')->assertNotFound();
 });

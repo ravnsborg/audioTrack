@@ -14,6 +14,8 @@ class Category extends Model
     /** @use HasFactory<CategoryFactory> */
     use HasFactory;
 
+    protected $table = 'item_categories';
+
     public function items(): HasMany
     {
         return $this->hasMany(Item::class);
