@@ -147,7 +147,7 @@ it('shows inventory navigation after the dashboard for authenticated users', fun
     }
 
     $this->get('/admin/items')->assertSeeInOrder(['Dashboard', 'Items']);
-    $this->get('/admin/categories')->assertSee('Item Category');
+    $this->get('/admin/categories')->assertSee('Item Categories');
     $this->get('/admin/item-statuses')->assertNotFound();
 });
 
@@ -161,7 +161,7 @@ it('shows reference links below a divider after clients in the sidebar', functio
             'Client Locations',
             'Clients',
             'border-top: 1px solid rgba(156, 163, 175, 0.35);',
-            'Item Category',
+            'Item Categories',
             'Kit statuses',
         ], false)
         ->assertDontSee('Reference data')
