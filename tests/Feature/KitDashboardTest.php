@@ -34,5 +34,6 @@ it('shows kit totals by status on the admin dashboard', function () {
         ])
         ->assertSee('<span style="color: #86efac;">2</span>', false)
         ->assertSee('<span style="color: oklch(0.51 0.26 276.81);">1</span>', false)
-        ->assertSee('<span style="color: #fbbf24;">3</span>', false);
+        ->assertSee('<span style="color: #fbbf24;">3</span>', false)
+        ->assertDontSee('<h1 class="fi-header-heading">', false);
 });
