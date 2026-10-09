@@ -5,6 +5,7 @@ namespace App\Providers\Filament;
 use App\Filament\Resources\ClientLocations\Pages\ListClientLocations;
 use App\Filament\Resources\Items\Pages\ManageItems;
 use App\Filament\Resources\Kits\Pages\ManageKits;
+use App\Filament\Widgets\KitsOverview;
 use App\Models\Category;
 use App\Models\Client;
 use App\Models\KitStatus;
@@ -18,8 +19,6 @@ use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
 use Filament\Tables\View\TablesRenderHook;
-use Filament\Widgets\AccountWidget;
-use Filament\Widgets\FilamentInfoWidget;
 use Illuminate\Contracts\View\View;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
@@ -48,8 +47,7 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\Filament\Widgets')
             ->widgets([
-                AccountWidget::class,
-                FilamentInfoWidget::class,
+                KitsOverview::class,
             ])
             ->navigationGroups([
                 'Reference data' => NavigationGroup::make("\u{200B}")
