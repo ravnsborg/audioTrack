@@ -41,6 +41,13 @@ it('shows client records in Filament and stores addresses as text', function () 
         ->and(Schema::getColumnType('clients', 'address'))->toBe('text');
 });
 
+it('does not show breadcrumbs at the top of the clients page', function () {
+    $this->actingAs(User::factory()->create())
+        ->get('/admin/clients')
+        ->assertOk()
+        ->assertDontSee('fi-header-has-breadcrumbs', false);
+});
+
 it('shows each client location count instead of its address in the table', function () {
     $address = '12345 Sound Street, Suite 678, Portland, Oregon 97201';
     $client = Client::factory()->create(['address' => $address]);

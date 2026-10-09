@@ -151,6 +151,23 @@ it('shows inventory navigation after the dashboard for authenticated users', fun
     $this->get('/admin/item-statuses')->assertNotFound();
 });
 
+it('shows reference links below a divider after clients in the sidebar', function () {
+    $this->actingAs(User::factory()->create());
+
+    $this->get('/admin/clients')
+        ->assertOk()
+        ->assertSeeInOrder([
+            'border-top: 1px solid rgba(156, 163, 175, 0.35); margin-top: 0.5rem; padding-top: 0.5rem;',
+            'Client Locations',
+            'Clients',
+            'border-top: 1px solid rgba(156, 163, 175, 0.35);',
+            'Item Category',
+            'Kit statuses',
+        ], false)
+        ->assertDontSee('Reference data')
+        ->assertDontSee('border-top: 1px solid rgba(156, 163, 175, 0.35); padding-top: 0.5rem;', false);
+});
+
 it('filters items by category and shows all categories by default', function () {
     $microphoneCategory = Category::factory()->create(['name' => 'microphone']);
     $receiverCategory = Category::factory()->create(['name' => 'wireless receiver']);

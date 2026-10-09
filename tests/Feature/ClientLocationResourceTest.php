@@ -42,6 +42,13 @@ it('lists client locations and stores the address as text', function () {
         ->and(Schema::getColumnType('client_locations', 'address'))->toBe('text');
 });
 
+it('does not show breadcrumbs at the top of the client locations page', function () {
+    $this->actingAs(User::factory()->create())
+        ->get('/admin/client-locations')
+        ->assertOk()
+        ->assertDontSee('fi-header-has-breadcrumbs', false);
+});
+
 it('filters client locations by client using the kits dropdown style', function () {
     $northwind = Client::factory()->create(['name' => 'Northwind Audio']);
     $southwind = Client::factory()->create(['name' => 'Southwind Audio']);

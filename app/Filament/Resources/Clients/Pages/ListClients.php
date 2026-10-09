@@ -10,6 +10,11 @@ class ListClients extends ListRecords
 {
     protected static string $resource = ClientResource::class;
 
+    public function getBreadcrumbs(): array
+    {
+        return [];
+    }
+
     protected function getHeaderActions(): array
     {
         return [

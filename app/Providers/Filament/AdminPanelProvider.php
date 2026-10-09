@@ -12,6 +12,7 @@ use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
+use Filament\Navigation\NavigationGroup;
 use Filament\Pages\Dashboard;
 use Filament\Panel;
 use Filament\PanelProvider;
@@ -49,6 +50,13 @@ class AdminPanelProvider extends PanelProvider
             ->widgets([
                 AccountWidget::class,
                 FilamentInfoWidget::class,
+            ])
+            ->navigationGroups([
+                'Reference data' => NavigationGroup::make("\u{200B}")
+                    ->collapsible(false)
+                    ->extraSidebarAttributes([
+                        'style' => 'border-top: 1px solid rgba(156, 163, 175, 0.35);',
+                    ]),
             ])
             ->renderHook(
                 TablesRenderHook::TOOLBAR_GROUPING_SELECTOR_BEFORE,
