@@ -4,6 +4,7 @@ use App\Filament\Resources\Clients\Pages\CreateClient;
 use App\Filament\Resources\Clients\Pages\EditClient;
 use App\Filament\Resources\Clients\Pages\ListClients;
 use App\Models\Client;
+use App\Models\ClientLocation;
 use App\Models\User;
 use Filament\Actions\DeleteAction;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -40,14 +41,20 @@ it('shows client records in Filament and stores addresses as text', function () 
         ->and(Schema::getColumnType('clients', 'address'))->toBe('text');
 });
 
-it('truncates client addresses to 25 characters and shows the full address on hover', function () {
+it('shows each client location count instead of its address in the table', function () {
     $address = '12345 Sound Street, Suite 678, Portland, Oregon 97201';
     $client = Client::factory()->create(['address' => $address]);
+    ClientLocation::factory()
+        ->count(2)
+        ->for($client)
+        ->create();
 
     Livewire::test(ListClients::class)
         ->assertCanSeeTableRecords([$client])
-        ->assertSee('12345 Sound Street,...')
-        ->assertSee($address);
+        ->assertCanRenderTableColumn('locations_count')
+        ->assertTableColumnStateSet('locations_count', 2, $client)
+        ->assertTableColumnDoesNotExist('address')
+        ->assertDontSee($address);
 });
 
 it('creates a client from the Filament form', function () {

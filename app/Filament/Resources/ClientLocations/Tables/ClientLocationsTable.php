@@ -17,16 +17,16 @@ class ClientLocationsTable
     {
         return $table
             ->columns([
+                TextColumn::make('title')
+                    ->searchable()
+                    ->sortable(),
                 TextColumn::make('client.name')
                     ->label('Client')
                     ->searchable()
                     ->sortable(),
-                TextColumn::make('title')
-                    ->searchable()
-                    ->sortable(),
                 TextColumn::make('address')
                     ->limit(40)
-                    ->tooltip(fn (?string $state): ?string => $state),
+                    ->tooltip(fn(?string $state): ?string => $state),
             ])
             ->filters([
                 SelectFilter::make('client_id')

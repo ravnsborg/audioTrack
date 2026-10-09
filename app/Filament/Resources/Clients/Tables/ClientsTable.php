@@ -26,9 +26,9 @@ class ClientsTable
                     ->searchable(),
                 TextColumn::make('email')
                     ->searchable(),
-                TextColumn::make('address')
-                    ->limit(20)
-                    ->tooltip(fn (?string $state): ?string => $state),
+                TextColumn::make('locations_count')
+                    ->counts('locations')
+                    ->label('Locations'),
             ])
             ->recordActions([
                 EditAction::make(),
