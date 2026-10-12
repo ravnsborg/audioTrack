@@ -1,58 +1,74 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# AudioTrack
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+AudioTrack is an internal administration application for organizing audio equipment and coordinating its dispatch to client locations. It provides a Filament admin panel for managing kits, inventory items and categories, clients and their locations, drivers, users, and dispatches.
 
-## About Laravel
+The admin dashboard summarizes kit inventory and today's in-transit dispatches, and lists today's scheduled dispatches with queue position, location, kit, driver, and status. Dispatches can be scheduled and managed from the Dispatches section.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## Requirements
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+- PHP 8.3 or newer
+- Composer
+- Node.js and npm
+- SQLite for the default local setup, or another Laravel-supported database such as MySQL
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+## Installation
 
-## Learning Laravel
-
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
-
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
-
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
-
-## Agentic Development
-
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
+Clone the repository and change into its directory, then run:
 
 ```bash
-composer require laravel/boost --dev
-
-php artisan boost:install
+composer run setup
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+The setup script installs PHP dependencies, creates `.env` from `.env.example` if needed, generates the application key, runs database migrations, installs JavaScript dependencies, and builds the frontend assets.
 
-## Contributing
+The default `.env.example` uses SQLite. To use another database, update the `DB_*` settings in `.env` before running migrations. Ensure the configured database exists and is accessible to the application.
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+To create or update the database table schema manually, run migrations before seeding or using the application:
 
-## Code of Conduct
+```bash
+php artisan migrate
+```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+`composer run setup` already runs the initial migrations. Run `php artisan migrate` again after pulling changes that add new migrations.
 
-## Security Vulnerabilities
+### Seed sample data
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+For a local development environment, load the sample categories, kits, items, clients, client locations, driver, and dispatch:
 
-## License
+```bash
+php artisan db:seed
+```
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+Seeding does not create an admin login. Create one with Filament's user command:
+
+```bash
+php artisan make:filament-user --panel=admin
+```
+
+Follow the prompts to enter the admin user's name, email address, and password.
+
+### Start the application
+
+```bash
+composer run dev
+```
+
+This starts Laravel's local web server, queue listener, log viewer when available, and Vite development server. Open [http://localhost:8000/admin](http://localhost:8000/admin) and sign in with the Filament user you created.
+
+## Tests
+
+Run the test suite with:
+
+```bash
+php artisan test --compact
+```
+
+Tests use an in-memory SQLite database configured in `phpunit.xml`.
+
+## Technology
+
+- Laravel 13
+- Filament 5
+- PHP 8.3+
+- Tailwind CSS 4 and Vite
+- SQLite by default (other Laravel-supported databases can be configured)
