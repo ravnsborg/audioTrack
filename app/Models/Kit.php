@@ -26,4 +26,9 @@ class Kit extends Model
     {
         return $this->hasMany(Item::class);
     }
+
+    public function dispatches(): HasMany
+    {
+        return $this->hasMany(Dispatch::class);
+    }
 }
