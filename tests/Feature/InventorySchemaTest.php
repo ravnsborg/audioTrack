@@ -3,6 +3,7 @@
 use App\Filament\Resources\Items\Pages\ManageItems;
 use App\Filament\Resources\Kits\Pages\ManageKits;
 use App\Models\Category;
+use App\Models\Driver;
 use App\Models\Item;
 use App\Models\Kit;
 use App\Models\User;
@@ -79,12 +80,19 @@ it('removes unrecognized categories and reassigns their items when reseeded', fu
     expect($item->category->name)->toBe('microphone');
 });
 
-it('seeds sample items and kits through the default database seeder', function () {
+it('seeds sample data through the default database seeder', function () {
     $this->seed(DatabaseSeeder::class);
 
     $this->assertDatabaseCount('kits', 5);
     $this->assertDatabaseCount('items', 10);
     $this->assertDatabaseCount('clients', 5);
+    $this->assertDatabaseCount('users', 1);
+    $this->assertDatabaseCount('drivers', 1);
+
+    $driver = Driver::query()->with('user')->sole();
+    expect($driver->user->name)->toBe('Dylan Brody')
+        ->and($driver->status)->toBe('active');
+
     expect(Kit::query()->pluck('status')->all())
         ->each->toBeIn(array_keys(Kit::STATUSES));
     expect(Category::query()->orderBy('name')->pluck('name')->all())->toBe([
