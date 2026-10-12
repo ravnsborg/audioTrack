@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Dispatch;
 use App\Models\Kit;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -19,4 +20,32 @@ it('shows total kits and pending cleaning count on the admin dashboard', functio
         ->assertDontSee('Active Kits')
         ->assertDontSee('In Transit Kits')
         ->assertDontSee('<h1 class="fi-header-heading">', false);
+});
+
+it('shows today’s in-transit dispatch count in blue-purple beside total kits', function () {
+    $this->travelTo(now()->startOfDay()->addHours(9));
+
+    Dispatch::factory()->count(2)->create([
+        'status' => 'in_transit',
+        'delivery_datetime' => today()->addHours(10),
+    ]);
+    Dispatch::factory()->create([
+        'status' => 'staged',
+        'delivery_datetime' => today()->addHours(10),
+    ]);
+    Dispatch::factory()->create([
+        'status' => 'in_transit',
+        'delivery_datetime' => today()->addDay()->addHours(10),
+    ]);
+    Dispatch::factory()->create([
+        'status' => 'in_transit',
+        'delivery_datetime' => null,
+    ]);
+
+    $this->actingAs(User::factory()->create());
+
+    $this->get('/admin')
+        ->assertOk()
+        ->assertSeeInOrder(['Total Kits', 'In Transit', '2', 'Pending Cleaning'])
+        ->assertSee('<span style="color: #6366f1;">2</span>', false);
 });

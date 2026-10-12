@@ -33,10 +33,12 @@ class DispatchesTable
                 TextColumn::make('status')
                     ->badge()
                     ->formatStateUsing(fn (string $state): string => Dispatch::STATUSES[$state])
+                    ->searchable()
                     ->sortable(),
                 TextColumn::make('queue_position')
                     ->label('Stops before delivery')
                     ->numeric()
+                    ->searchable()
                     ->sortable(),
                 TextColumn::make('delivery_datetime')
                     ->dateTime()

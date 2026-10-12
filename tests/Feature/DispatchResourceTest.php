@@ -65,6 +65,10 @@ it('lists dispatches with their driver, client location, kit, and status', funct
         ->get('/admin/dispatches')
         ->assertOk()
         ->assertSee('Dispatches')
+        ->assertSee('All Statuses')
+        ->assertSee('Staged')
+        ->assertSee('wire:model.live="tableFilters.status.value"', false)
+        ->assertSee('Search', false)
         ->assertSee('Jordan Lee')
         ->assertSee('Main Studio')
         ->assertSee('KIT-1001')
@@ -75,6 +79,26 @@ it('lists dispatches with their driver, client location, kit, and status', funct
         ->assertTableColumnStateSet('driver.user.name', 'Jordan Lee', $dispatch)
         ->assertTableColumnStateSet('clientLocation.title', 'Main Studio', $dispatch)
         ->assertTableColumnStateSet('kit.kit_number', 'KIT-1001', $dispatch);
+});
+
+it('filters and searches dispatches on the dispatches page', function () {
+    $matchingKit = Kit::factory()->create(['kit_number' => 'KIT-1234']);
+    $otherKit = Kit::factory()->create(['kit_number' => 'KIT-5678']);
+
+    $stagedDispatch = Dispatch::factory()->for($matchingKit)->create(['status' => 'staged']);
+    $deliveredDispatch = Dispatch::factory()->for($otherKit)->create(['status' => 'delivered']);
+
+    $this->actingAs(User::factory()->create());
+
+    Livewire::test(ListDispatches::class)
+        ->assertCanSeeTableRecords([$stagedDispatch, $deliveredDispatch])
+        ->filterTable('status', 'delivered')
+        ->assertCanSeeTableRecords([$deliveredDispatch])
+        ->assertCanNotSeeTableRecords([$stagedDispatch])
+        ->filterTable('status', '')
+        ->searchTable('KIT-1234')
+        ->assertCanSeeTableRecords([$stagedDispatch])
+        ->assertCanNotSeeTableRecords([$deliveredDispatch]);
 });
 
 it('creates a dispatch with its driver, client location, and kit', function () {

@@ -4,11 +4,14 @@ namespace App\Providers\Filament;
 
 use App\Filament\Pages\Dashboard;
 use App\Filament\Resources\ClientLocations\Pages\ListClientLocations;
+use App\Filament\Resources\Dispatches\Pages\ListDispatches;
 use App\Filament\Resources\Items\Pages\ManageItems;
 use App\Filament\Resources\Kits\Pages\ManageKits;
 use App\Filament\Widgets\KitsOverview;
+use App\Filament\Widgets\TodaysDispatches;
 use App\Models\Category;
 use App\Models\Client;
+use App\Models\Dispatch;
 use App\Models\Kit;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
@@ -48,6 +51,7 @@ class AdminPanelProvider extends PanelProvider
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\Filament\Widgets')
             ->widgets([
                 KitsOverview::class,
+                TodaysDispatches::class,
             ])
             ->navigationGroups([
                 'Reference data' => NavigationGroup::make("\u{200B}")
@@ -81,6 +85,13 @@ class AdminPanelProvider extends PanelProvider
 
                     return '';
                 },
+            )
+            ->renderHook(
+                TablesRenderHook::TOOLBAR_GROUPING_SELECTOR_BEFORE,
+                fn (): View => view('filament.kits.status-filter', [
+                    'statuses' => Dispatch::STATUSES,
+                ]),
+                ListDispatches::class,
             )
             ->middleware([
                 EncryptCookies::class,

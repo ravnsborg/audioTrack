@@ -2,6 +2,7 @@
 
 namespace App\Filament\Widgets;
 
+use App\Models\Dispatch;
 use App\Models\Kit;
 use Filament\Widgets\StatsOverviewWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
@@ -15,6 +16,17 @@ class KitsOverview extends StatsOverviewWidget
     {
         return [
             Stat::make('Total Kits', Kit::query()->count()),
+            Stat::make(
+                'In Transit',
+                new HtmlString(
+                    '<span style="color: #6366f1;">'.
+                    e((string) Dispatch::query()
+                        ->where('status', 'in_transit')
+                        ->whereDate('delivery_datetime', today())
+                        ->count()).
+                    '</span>',
+                ),
+            ),
             Stat::make(
                 'Pending Cleaning',
                 new HtmlString(
